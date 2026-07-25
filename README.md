@@ -18,9 +18,8 @@ This project demonstrates a practical ETL workflow in Microsoft Fabric:
 
 1. **Extract** sales orders data from source files/tables.
 2. **Transform** data using Power Query M (cleaning, shaping, type handling).
-3. **Load** curated data into a Fabric Lakehouse.
-
-The goal is to simulate a common analytics engineering pattern and reinforce DP-600 skills.
+3. **Load** curated data into Lakehouse tables.
+4. **Orchestrate** refresh with a Data Pipeline.
 
 ---
 
@@ -30,56 +29,77 @@ The goal is to simulate a common analytics engineering pattern and reinforce DP-
 - Dataflows Gen2
 - Power Query M
 - Lakehouse (OneLake)
+- Data Pipeline
 
 ---
 
-## ETL Flow
+## Architecture Flow
 
-- **Ingestion Layer**
-  - Connect to source sales orders dataset.
-  - Configure schema detection and initial profiling.
-
-- **Transformation Layer**
-  - Rename and standardize columns.
-  - Convert data types (dates, numeric, text).
-  - Handle nulls and invalid records.
-  - Derive additional business fields where needed.
-
-- **Load Layer**
-  - Write transformed output to Lakehouse tables.
-  - Validate row counts and key fields after load.
+CSV Source (GitHub Raw URL)
+→ Dataflow Gen2 (Power Query transformations)
+→ Lakehouse table (`orders_raw`, append mode)
+→ Pipeline orchestration (`PL_Load_Orders_Data`)
 
 ---
 
-## Repository Structure
+## Dataset
 
-```text
-.
-├── README.md
-└── LAB_GUIDE.md
+- **Source**: Microsoft Learn sample dataset
+- **URL**: `https://raw.githubusercontent.com/MicrosoftLearning/dp-data/main/orders.csv`
+
+Expected columns include:
+- `SalesOrderID`
+- `OrderDate`
+- `CustomerID`
+- `LineItem`
+- `ProductID`
+- `OrderQty`
+- `LineItemTotal`
+- `MonthNo` (custom column, derived from `OrderDate`)
+
+---
+
+## Power Query M Formula
+
+```m
+= Date.Month([OrderDate])
 ```
 
 ---
 
-## Learning Outcomes (DP-600 Aligned)
+## Naming Conventions
 
-- Build and orchestrate ETL with Dataflows Gen2.
-- Apply robust Power Query transformations.
-- Deliver cleaned analytical data into a Lakehouse.
-- Understand practical medallion-style data preparation patterns.
+- Dataflow: `DF_Orders_Ingestion`
+- Connection: `CONN_GitHub_Orders_CSV`
+- Lakehouse table: `orders_raw`
+- Pipeline: `PL_Load_Orders_Data`
+
+---
+
+## What to Upload (Recommended)
+
+- `README.md`
+- `LAB_GUIDE.md`
+- `screenshots/` folder containing execution evidence:
+  - Power Query transformations
+  - Destination settings (Append)
+  - Dataflow run success
+  - Pipeline activity setup
+  - Pipeline run success
+  - Lakehouse `orders_raw` table verification
 
 ---
 
 ## How to Use This Repository
 
-1. Review the implementation steps in `LAB_GUIDE.md`.
-2. Recreate the same flow in your Fabric workspace.
-3. Adapt transformations to your own source schema.
-4. Validate final output in Lakehouse tables.
+1. Open `LAB_GUIDE.md`.
+2. Recreate the ETL steps in your Fabric workspace.
+3. Use the dataset URL above as source input.
+4. Validate output in Lakehouse table `orders_raw`.
 
 ---
 
-## Notes
+## References
 
-- This lab is educational and intended for Microsoft Fabric learning.
-- Naming conventions and transformations can be customized for enterprise standards.
+- Microsoft Fabric docs: https://learn.microsoft.com/fabric/
+- Power Query M reference: https://learn.microsoft.com/powerquery-m/
